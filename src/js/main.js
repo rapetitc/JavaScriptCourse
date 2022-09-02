@@ -2,11 +2,11 @@ console.clear();
 
 /* Esta es mi base de datos */
 const products = [
-    {id: 1, name: "Harina", price: 3000, stock: 19},
-    {id: 2, name: "Aceite", price: 7000, stock: 24},
-    {id: 3, name: "Mantequilla", price: 1500, stock: 53},
-    {id: 4, name: "Huevo", price: 5000, stock: 76},
-    {id: 5, name: "Leche", price: 5000, stock: 7}
+    {id: 1, name: "harina", price: 3000, stock: 19},
+    {id: 2, name: "aceite", price: 7000, stock: 24},
+    {id: 3, name: "mantequilla", price: 1500, stock: 53},
+    {id: 4, name: "huevo", price: 5000, stock: 76},
+    {id: 5, name: "leche", price: 5000, stock: 7}
 ];
 const myCart = [];
 
@@ -27,16 +27,19 @@ const cart = {
             if (id == myCart[i].id) {
                 return myCart[i].quantity
             }
-            
         }
     },
     updatingQuantity : (id, q) => {
-        for (let i = 0; i < myCart.length; i++) {
+        myCart.map((item)=>{
+            if (item.id == id) {
+                item.quantity += q;
+            }
+        });
+        /* for (let i = 0; i < myCart.length; i++) {
             if (id == myCart[i].id) {
                 myCart[i].quantity += q;
             }
-            
-        }
+        } */
     }
 }
 /* Conjunto de funciones para validar stock en mi base de datos */
@@ -47,6 +50,19 @@ const stock = {
             message += items[i].id + ") " + items[i].name + " (COP "+ items[i].price + ") \t\t Disponibles: "+ items[i].stock +"\n";
         }
         return message;
+    },
+    getElemetByName : (items, name) => {
+        const element = items.filter((x) => {
+            return x.name == name;
+        });
+        /* return element; */
+        if (element.length > 0) {
+            for (let i = 0; i < element.length; i++) {
+                return element[i].id + ") " + element[i].name + " (COP "+ element[i].price + ") \t\t Disponibles: "+ element[i].stock +"\n";
+            }
+        } else {
+            return 0;
+        }
     },
     getName : (items, id) => {
         for (let i = 0; i < items.length; i++) {
@@ -112,9 +128,16 @@ function prod() {
     // Mostrar los productos 
     let cont = true;
     while(cont == true){
-        let seleccionados = prompt('Agrega tus productos\n\n'+ stock.alertIt(products) +'\n\t9) Atras');
-        if (seleccionados != "1" && seleccionados != "2" && seleccionados != "3" && seleccionados != "4" && seleccionados != "5" && seleccionados != "9") {
+        let seleccionados = prompt('Agrega tus productos\n\n'+ stock.alertIt(products) +'\n\t8) Buscar por nombre\n\t9) Atras');
+        if (seleccionados != "1" && seleccionados != "2" && seleccionados != "3" && seleccionados != "4" && seleccionados != "5" && seleccionados != "8" && seleccionados != "9") {
             alert("Escoje una opcion valida");
+        } else if(seleccionados == "8"){
+            const toSearched = prompt("Introduce el nombre del producto");
+            if (stock.getElemetByName(products, toSearched) == 0) {
+                alert("No se han encontrado elementos");
+            }else{
+                alert(stock.getElemetByName(products, toSearched));
+            }
         } else if(seleccionados == "9"){
             cont = false;
         } else {
