@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Store, Desafio 4 - Ruben Petit</title>
+    <title>Online Store, Interactuar con HTML - Ruben Petit</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="src/css/main.css">
@@ -34,6 +34,42 @@
             </div>
         </div>
         <div class="store">
+            <input type="checkbox" name="cart-toggle" id="cart-toggle" checked>
+            <div class="store-cart" id="store-cart">
+                <div class="cart-content">
+                    <div class="cart-title">
+                        <h3><i class="bi bi-cart3"></i> Carritos de compras</h3>
+                        <label for="cart-toggle"><i class="bi bi-x-lg"></i></label>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td>Titulo</td>
+                                <td>Precio</td>
+                                <td>Descuento</td>
+                                <td>Cantidad</td>
+                                <td>Impuestos</td>
+                                <td>Total</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <!--<div class="cart-article">
+                        <div class="article-img">
+                            <img src="src/media/product1.png" alt="product1">
+                        </div>
+                        <div class="article-title">
+                            <h3>Harina de Maiz PAN 1000g</h3>
+                        </div>
+                        <div class="article-description">
+                            <p class="newPrice">COP 4.300</p>
+                            <p class="oldPrice">COP 6.000</p>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
             <div class="store-searchBar">
                 <form>
                     <input type="search" placeholder="Buscar" id="search-bar">
@@ -41,25 +77,26 @@
                         <i class="bi bi-search"></i>
                     </button>
                 </form>
+                <label for="cart-toggle"><i class="bi bi-cart3"></i></label>
             </div>
             <div class="store-filter">
                 <input type="checkbox" name="store-filter-toggle" id="store-filter-toggle">
                 <label for="store-filter-toggle" class="store-filter-toggle"><i class="bi bi-funnel"></i>  Filtrar</label>
                 <div class="filter-group">
                     <h3>Categoria</h3>
-                    <label for="check1">Lacteos</label>
+                    <!-- <label for="check1">Lacteos</label>
                     <input type="checkbox" name="check1" id="check1">
                     <label for="check2">Harinas</label>
                     <input type="checkbox" name="check2" id="check2">
                     <label for="check3">Dulces y Chucherias</label>
                     <input type="checkbox" name="check3" id="check3">
                     <label for="check4">Cafe</label>
-                    <input type="checkbox" name="check4" id="check4">
+                    <input type="checkbox" name="check4" id="check4"> -->
                 </div>
             </div>
             <div class="store-items">
                 <div class="store-articles">
-                    <div class="article">
+                    <!-- <div class="article">
                         <div class="article-img">
                             <img src="src/media/product1.png" alt="product1">
                         </div>
@@ -154,7 +191,7 @@
                             <p class="newPrice">COP 4.300</p>
                             <p class="oldPrice">COP 6.000</p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="contact" id="contact">
