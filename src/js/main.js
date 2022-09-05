@@ -16,6 +16,9 @@ const discounts = [
     {id: 1, title: "Descuentos en Chocolates y Snacks", discount: "15%", applyTo : [6,7,11], startDate: "01/09/2022", expirationDate: "31/12/2022"},
     {id: 2, title: "Descuentos en Mantequilla Mavesa 1000g", discount: "20%", applyTo : [3], startDate: "01/09/2022", expirationDate: "31/12/2022"}
 ];
+const legal = [
+    {id: 1, title: "Acorde a la ley los taxes 31/12/2021", taxes: "12%", applyTo : [1,2,3,4,5,6,7,8,9,10,11,12], startDate: "31/12/2021", expirationDate: "31/12/2022"}
+];
 const myCart = [];
 
 /* Este es mi constructor para mi carrito */
@@ -26,8 +29,59 @@ class MyCart{
     }
 }
 
-/* Conjunto de funciones para validar stock en mi base de datos */
+// Conjunto de funciones para mostrar los articulos agregados al carrito
 const cart = {
+    //Retorna todos los articulos agregados al carrito con todos los detalles.
+    //NO ELIMINAR, PERFECTA CONSTRUCCION, NO ELIMINAR, PERFECTA CONSTRUCCION, NO ELIMINAR, PERFECTA CONSTRUCCION
+    //NO ELIMINAR, PERFECTA CONSTRUCCION, NO ELIMINAR, PERFECTA CONSTRUCCION, NO ELIMINAR, PERFECTA CONSTRUCCION
+    pull : (cartDB, productsDB, discountDB, taxesDB) => {
+        let tempInfoToPull = [];
+        if (cartDB.length > 0) {
+            for (let i = 0; i < cartDB.length; i++) {
+                let temp = productsDB.filter(item => { if (item.id == cartDB[i].id) { return item; }});
+                tempInfoToPull.push({
+                    id          : temp[0].id,
+                    title       : temp[0].title,
+                    price       : temp[0].price,
+                    discount    : cart.checkDiscount(discountDB, temp[0].id, temp[0].price),
+                    taxes       : cart.checkTaxes(taxesDB, temp[0].id, temp[0].price),
+                    quantity    : cartDB[i].quantity,
+                    imgroute    : temp[0].imgroute,
+                    category    : temp[0].category
+                });
+                
+            }
+        }
+        console.log(tempInfoToPull);
+        return tempInfoToPull;
+    },
+    checkDiscount : (discountsDB, id, price) => {
+        let tempValueToReturn = 0;
+        discountsDB.forEach(x => {
+            x.applyTo.forEach(y =>{
+                if (y == id) {
+                    tempValueToReturn = ((parseInt(x.discount)/100) * price);
+                }
+            });
+        });
+        //console.log(tempValueToReturn);
+        return tempValueToReturn;
+    },
+    checkTaxes : (taxesDB, id, price) => {
+        let tempValueToReturn = price;
+        taxesDB.forEach(x => {
+            x.applyTo.forEach(y =>{
+                if (y == id) {
+                    tempValueToReturn = ((parseInt(x.taxes)/100) * price);
+                }
+            });
+        });
+        //console.log(tempValueToReturn);
+        return tempValueToReturn;
+    },
+    //OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO
+    //OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO
+    //OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO OBSOLETOO
     getQuantityById : (id) => {
         for (let i = 0; i < myCart.length; i++) {
             if (id == myCart[i].id) {
@@ -41,11 +95,6 @@ const cart = {
                 item.quantity += q;
             }
         });
-        /* for (let i = 0; i < myCart.length; i++) {
-            if (id == myCart[i].id) {
-                myCart[i].quantity += q;
-            }
-        } */
     }
 }
 /* Conjunto de funciones para validar stock en mi base de datos */
@@ -70,6 +119,7 @@ const stock = {
             return 0;
         }
     },
+    /* Procesa una base de datos y devuelve un arreglo basado en ID a buscar */
     getElemetById : (items, id) => {
         for (let i = 0; i < items.length; i++) {
             const element = items[i];
@@ -87,13 +137,37 @@ const stock = {
             }            
         }
     },
-    pullToMyCart : (items, id, q) => {
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].id == id) {
+    pullToMyCart : (productsDB, id, q) => {
+        for (let i = 0; i < productsDB.length; i++) {
+            if (productsDB[i].id == id) {
                 const element = new MyCart(products[i].id, q);
                 myCart.push(element);
             }            
         }
+    },
+    checkDiscount : (productsDB, discountsDB, id) => {
+        let tempItem = productsDB.filter(x => x.id == id);
+        let valveDiscount = [false, tempItem[0].price, 0];
+        discountsDB.forEach(x => {
+            x.applyTo.forEach(y =>{
+                if (y == tempItem[0].id) {
+                    valveDiscount = [true, tempItem[0].price, (tempItem[0].price - ((parseInt(x.discount)/100) * tempItem[0].price))];
+                }
+            });
+        });
+        return valveDiscount;
+    },
+    checkTaxes : (productsDB, taxesDB, id) => {
+        let tempItem = productsDB.filter(x => x.id == id);
+        let tempTaxes = [false, tempItem[0].price, 0];
+        taxesDB.forEach(x => {
+            x.applyTo.forEach(y =>{
+                if (y == tempItem[0].id) {
+                    tempTaxes = [true, tempItem[0].price, (tempItem[0].price + ((parseInt(x.taxes)/100) * tempItem[0].price))];
+                }
+            });
+        });
+        return tempTaxes;
     },
     //Revisa la cantidad disponible de un articulo
     check : (items, id, quantity) => {
@@ -114,9 +188,6 @@ const stock = {
 let globalCont = true;
 /* Inicio y menu de mi app */
 function app(){
-    console.clear()
-    showProduct();
-    showCart();
     /* Menu */
     let cont = true;
     while(cont == true && globalCont == true){
@@ -179,60 +250,57 @@ function showProduct(){
     }
     elements.innerHTML += filter;
 }
-function showCart(){
-    let elements = document.querySelector(".cart-content table tbody");
-    elements.innerHTML = ``;
-    let totalPrice = 0;
-    if (myCart.length > 0) {
-        myCart.forEach(element => {
-            let valveDiscount = [false,0];
-            let idSearched = stock.getElemetById(products,element.id);
-            discounts.forEach(disc => {
-                disc.applyTo.forEach(id => {
-                    if (id == element.id) {
-                        valveDiscount = [true, disc.discount]
-                    }
-                });
-            });
-            let priceToShow = 0;
-            let priceToCalculate = 0;
-            if (valveDiscount[0] == true) {
-                //console.log("Discount");
-                priceToCalculate = idSearched.price - (idSearched.price * (parseInt(valveDiscount[1]) / 100));
-                priceToShow = '<td class="newPrice">COP '+ priceToCalculate + '</td><td class="oldPrice">COP ' + idSearched.price + '</td>' ;
-            }else{
-                //console.log("No Discounts");
-                priceToCalculate = idSearched.price;
-                priceToShow = '<td class="newPrice">COP ' + priceToCalculate + '</td><td class="oldPrice"></td>';
-            }
-            elements.innerHTML += `
+function showCart(cartDB){
+    // Tomando mi codigo HTML para ser modificado
+    let tempHTML = document.querySelector(".cart-content table tbody");
+    //Reseteo de mi codigo HMTL
+    tempHTML.innerHTML = ``;
+    // Variable que almacena el calculo del precio total
+    let tempTotalDiscount = 0;
+    let tempTotalTaxes = 0;
+    let tempTotalPrice = 0;
+    //Midiendo la longitud del carrito
+    let tempFullCart = cart.pull(cartDB, products, discounts, legal);
+    if (tempFullCart.length > 0) {
+        for (let i = 0; i < tempFullCart.length; i++) {
+            tempTotalDiscount += tempFullCart[i].discount;
+            tempTotalTaxes += tempFullCart[i].taxes;
+            tempTotalPrice += ((tempFullCart[i].price - tempFullCart[i].discount) + tempFullCart[i].taxes) * tempFullCart[i].quantity;
+            tempHTML.innerHTML += `
                 <tr>
-                    <td><img src="${idSearched.imgroute}" alt="${idSearched.title}"></td>
-                    <td>${idSearched.title}</td>
-                    ${priceToShow}
-                    <td>${element.quantity}</td>
-                    <td>$0</td>
-                    <td>COP ${priceToCalculate * element.quantity}</td>
-                </tr>
-            `;
-            totalPrice += (priceToCalculate * element.quantity);
-        });
+                    <td><img src="${tempFullCart[i].imgroute}" alt="${tempFullCart[i].title}"></td>
+                    <td>${tempFullCart[i].title}</td>
+                    <td>COP ${tempFullCart[i].price}</td>
+                    <td>COP ${tempFullCart[i].discount}</td>
+                    <td>COP ${tempFullCart[i].taxes}</td>
+                    <td>${tempFullCart[i].quantity}</td>
+                    <td>${((tempFullCart[i].price - tempFullCart[i].discount) + tempFullCart[i].taxes) * tempFullCart[i].quantity}</td>
+                <tr>
+                `;
+        }
     }else{
-        elements.innerHTML += `
+        tempHTML.innerHTML += `
             <tr>
-            <td colspan="8">Carrito vacio</td>`;
+                <td colspan="8">Carrito vacio</td>
+            <tr>
+            `;
     }
-    elements.innerHTML += `
+    tempHTML.innerHTML += `
         <tr>
-        <td colspan="6">Total Iva</td>
-        <td>COP 0</td>
+            <td colspan="6">Total Discount</td>
+            <td>COP ${tempTotalDiscount}</td>
+        </tr>
+        <tr>
+            <td colspan="6">Total IVA</td>
+            <td>COP ${tempTotalTaxes}</td>
         </tr>
         <tr>
             <td colspan="6">Precio Total</td>
-            <td>COP ${totalPrice}</td>
-        </tr>`;
+            <td>COP ${tempTotalPrice}</td>
+        </tr>
+        `;
 }
-/* En esta funcion le mostramos una lista de productos a cliente */
+// En esta funcion le mostramos una lista de productos a cliente 
 function prod() {
     // Mostrar los productos 
     let cont = true;
@@ -260,122 +328,30 @@ function prod() {
         }
     }
 }
-function addingToCart(id){
-    //console.log(stock.getName(products, id));
-    let q = 0;
-    q = parseInt(prompt(`Cuantos articulos desearias agregar de ${stock.getName(products,id)}`));
-    //Validar Stock antes de agregar un articulo
-    while (q <= 0 || stock.check(products, id, q) == false || isNaN(q) == true) {
-        if (q <= 0 || isNaN(q) == true) {
-            alert('Escoge un valor mayor o igual uno');
-        };
-        if (stock.check(products, id, q) == false) {
-            alert('Lo sentimos, no poseemos tanto stock para tus requisitos, escoge un valor menor');
+// 
+function showingCart(cartDB) {
+    // Tomando mi codigo HTML para ser modificado
+    let tempMessage = '';
+    // Variable que almacena el calculo del precio total
+    let tempTotalDiscount = 0;
+    let tempTotalTaxes = 0;
+    let tempTotalPrice = 0;
+    //Midiendo la longitud del carrito
+    let tempFullCart = cart.pull(cartDB, products, discounts, legal);
+    if (tempFullCart.length > 0) {
+        for (let i = 0; i < tempFullCart.length; i++) {
+            tempTotalDiscount += tempFullCart[i].discount;
+            tempTotalTaxes += tempFullCart[i].taxes;
+            tempTotalPrice += ((tempFullCart[i].price - tempFullCart[i].discount) + tempFullCart[i].taxes) * tempFullCart[i].quantity;
+            tempMessage += `${i+1}) ${tempFullCart[i].title} (COP ${tempFullCart[i].price}) > (- ${tempFullCart[i].discount} + ${tempFullCart[i].taxes}) * ${tempFullCart[i].quantity} = COP ${((tempFullCart[i].price - tempFullCart[i].discount) + tempFullCart[i].taxes) * tempFullCart[i].quantity} \n`;
         }
-        q = parseInt(prompt('Cuantos articulos desearias agregar de ' + stock.getName(products,id)));
+    }else{
+        tempMessage = 'Carrito Vacio \n';
     }
 
-    //Agregar al carro
-    if (myCart.length == 0) {
-        //console.clear();
-        //console.log("Carrito vacio y procediendo a agregar un item");
-        stock.pullToMyCart(products, id, q);
-        //console.log('myCart se ha actualizado');
-        if (q > 1) {
-            alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente');
-        } else {
-            alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente');
-        }
-        //console.log(myCart);
-    } else {
-        //console.clear();
-        //console.log("Carrito no vacio("+myCart.length+" items) y procediendo a agregar un item");
-        //Validando que el articulo que sera agregado no este ya en el cart
-        let iValve = false;
-        for (let i = 0; i < myCart.length; i++) {
-            if (myCart[i].id == id) {
-                iValve = true;
-            }
-        }
-        if (iValve == true) {
-            //console.log('Se encuentra repetido');
-            /*
-            Validar stock nuevamente y actualizar quantity en my cart AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-            */
-           //console.log(cart.getQuantityById(id));
-            while (q <= 0 || stock.check(products, id, (cart.getQuantityById(id) + q)) == false || isNaN(q) == true) {
-                if (q <= 0 || isNaN(q) == true) {
-                    alert('Escoge un valor mayor o igual uno');
-                };
-                if (stock.check(products, id, q) == false) {
-                    alert('Lo sentimos, no poseemos tanto stock para tus requisitos, escoge un valor menor');
-                }
-                q = parseInt(prompt('Cuantos articulos desearias agregar de ' + stock.getName(products,id)));
-            }
-            cart.updatingQuantity(id, q);
-            if (q > 1) {
-                alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente, para un total de '+ cart.getQuantityById(id) +' articulos agregados');
-            } else {
-                alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente, para un total de '+ cart.getQuantityById(id) +' articulos agregados');
-            }   
-        } else {
-            //console.log('No se encuentra repetido');
-            stock.pullToMyCart(products, id, q);
-            //console.log('myCart se ha actualizado');
-            if (q > 1) {
-                alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente');
-            } else {
-                alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente');
-            }
-            //console.log(myCart);
-        }
-    }
-    showCart();
-}
-function showingCart(items) {
-    //console.clear();
-    const articlesAdded = [];
-    /* 
-    let priceDiscounted = 0; */
-    items.forEach(item => {
-        articlesAdded.push(stock.getElemetById(products,item.id))
-    });
-    /* 
-                                                                                        TRABAJAR EN EL DISCOUNT
-    */
-    let valveDiscount = [false,0];
-    let message = '';
-    let totalPrice = 0;
-    
-    if (items.length != 0) {
-        for (let i = 0; i < items.length; i++) {
-            discounts.forEach(disc => {
-                disc.applyTo.forEach(id => {
-                    if (id == items[i].id) {
-                        //console.log("applying disocunt")
-                        valveDiscount = [true, disc.discount]
-                    }else{
-                        //console.log("no applying disocunt")
-                    }
-                });
-            });
-            
-            if (valveDiscount[0] == true) {
-                //console.log('discount ' + (articlesAdded[i].price - (articlesAdded[i].price * parseInt(valveDiscount[1]) /100)))
-                totalPrice += ((articlesAdded[i].price - (articlesAdded[i].price * parseInt(valveDiscount[1]) /100))) * items[i].quantity;
-                message += (i+1) + ") " + articlesAdded[i].title + " (COP "+ articlesAdded[i].price + ") > Cantidad: "+ items[i].quantity +" > Total: COP "+ ((articlesAdded[i].price - (articlesAdded[i].price * parseInt(valveDiscount[1]) /100))) * items[i].quantity +"\n";
-            } else {
-                //console.log('no discount'+parseInt(valveDiscount[1]))
-                totalPrice += articlesAdded[i].price * items[i].quantity;
-                message += (i+1) + ") " + articlesAdded[i].title + " (COP "+ articlesAdded[i].price + ") > Cantidad: "+ items[i].quantity +" > Total: COP "+ (articlesAdded[i].price * items[i].quantity ) +"\n";
-            }
-        }
-    } else {
-        message = 'Carrito Vacio \n';
-    }
     let cont = true;
     while(cont == true){
-        let option = prompt("Carrito de compra\n\n"+message+"\nTotal a pagar: COP "+ totalPrice +"\n\n\tP) Comprar \n\tESC) Volver");
+        let option = prompt("Carrito de compra\n\n"+ tempMessage +"\nDescuentos: COP "+ tempTotalDiscount +"\nImpuestos: COP "+ tempTotalTaxes +"\nTotal a pagar: COP "+ tempTotalPrice +"\n\n\tP) Comprar \n\tESC) Volver");
         switch (option) {
             case "P":
                 purchase();
@@ -395,10 +371,73 @@ function showingCart(items) {
         }
     }
 }
+
+function addingToCart(id){
+    let q = 0;
+    q = parseInt(prompt(`Cuantos articulos desearias agregar de ${stock.getName(products,id)}`));
+    //Validar Stock antes de agregar un articulo
+    while (q <= 0 || stock.check(products, id, q) == false || isNaN(q) == true) {
+        if (q <= 0 || isNaN(q) == true) {
+            alert('Escoge un valor mayor o igual uno');
+        };
+        if (stock.check(products, id, q) == false) {
+            alert('Lo sentimos, no poseemos tanto stock para tus requisitos, escoge un valor menor');
+        }
+        q = parseInt(prompt('Cuantos articulos desearias agregar de ' + stock.getName(products,id)));
+    }
+
+    //Agregar al carro
+    if (myCart.length == 0) {
+        stock.pullToMyCart(products, id, q);
+        if (q > 1) {
+            alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente');
+        } else {
+            alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente');
+        }
+    } else {
+        //Validando que el articulo que sera agregado no este ya en el cart
+        let iValve = false;
+        for (let i = 0; i < myCart.length; i++) {
+            if (myCart[i].id == id) {
+                iValve = true;
+            }
+        }
+        if (iValve == true) {
+            while (q <= 0 || stock.check(products, id, (cart.getQuantityById(id) + q)) == false || isNaN(q) == true) {
+                if (q <= 0 || isNaN(q) == true) {
+                    alert('Escoge un valor mayor o igual uno');
+                };
+                if (stock.check(products, id, q) == false) {
+                    alert('Lo sentimos, no poseemos tanto stock para tus requisitos, escoge un valor menor');
+                }
+                q = parseInt(prompt('Cuantos articulos desearias agregar de ' + stock.getName(products,id)));
+            }
+            cart.updatingQuantity(id, q);
+            if (q > 1) {
+                alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente, para un total de '+ cart.getQuantityById(id) +' articulos agregados');
+            } else {
+                alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente, para un total de '+ cart.getQuantityById(id) +' articulos agregados');
+            }   
+        } else {
+            stock.pullToMyCart(products, id, q);
+            if (q > 1) {
+                alert('Se han agregado '+ q +' articulos a tu carrito satisfactoriamente');
+            } else {
+                alert('Se ha agregado '+ q +' articulo a tu carrito satisfactoriamente');
+            }
+        }
+    }
+    showCart(myCart);
+}
+
 function purchase() {
     alert("Gracias por comprar en mi tienda online !");
     globalCont = false;
 }
-//console.clear();
-app();
 
+window.onload = (event) => {
+    console.clear()
+    showCart(myCart);
+    showProduct();
+    setTimeout(app,100);
+};
