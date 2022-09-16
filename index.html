@@ -1,102 +1,199 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Store, Interactuar con HTML - Ruben Petit</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="src/css/main.css">
 </head>
+
 <body>
-    <div class="container">
-        <div class="nav">
-            <div class="nav-group-logo">
-                <div class="nav-logo"><img src="src/media/logo.png" alt="Online Store Logo"></div>
-                <div class="nav-title">Online Store</div>
-            </div>
-            <div class="nav-menu">
-                <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="#search-bar">Tienda</a></li>
-                    <!-- <li><a href="#">Nosotros</a></li> -->
-                    <li><a href="#contact">Contacto</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="nav-sliders">
-            <div class="nav-slider-content">
-                <div class="nav-slider"><img src="src/media/slider1.jpg" alt="Slider 1"></div>
-                <div class="nav-slider"><img src="src/media/slider2.jpg" alt="Slider 2"></div>
-                <div class="nav-slider"><img src="src/media/slider3.jpg" alt="Slider 3"></div>
-                <div class="nav-slider"><img src="src/media/slider1.jpg" alt="Slider 1"></div>
-            </div>
-        </div>
-        <div class="store">
-            <input type="checkbox" name="cart-toggle" id="cart-toggle" checked>
-            <div class="store-cart" id="store-cart">
-                <div class="cart-content">
-                    <div class="cart-title">
-                        <h3><i class="bi bi-cart3"></i> Carritos de compras</h3>
-                        <label for="cart-toggle"><i class="bi bi-x-lg"></i></label>
-                    </div>
-                    <table>
+    <!-- MODALS -->
+    <div class="modal fade modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="bi bi-cart3"></i> Carrito de compras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
-                                <td></td>
-                                <td>Titulo</td>
-                                <td>Precio</td>
-                                <td>Descuento</td>
-                                <td>Impuestos</td>
-                                <td>Cantidad</td>
-                                <td>Total</td>
+                                <th scope="col">#</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Descuento</th>
+                                <th scope="col">Impuestos</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Total</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="overflow: scroll;">
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="store-searchBar">
-                <form>
-                    <input type="search" placeholder="Buscar" id="search-bar">
-                    <button type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
-                <label for="cart-toggle"><i class="bi bi-cart3"></i></label>
-            </div>
-            <div class="store-filter">
-                <input type="checkbox" name="store-filter-toggle" id="store-filter-toggle">
-                <label for="store-filter-toggle" class="store-filter-toggle"><i class="bi bi-funnel"></i>  Filtrar</label>
-                <div class="filter-group">
-                    <h3>Categoria</h3>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary">Proceder a pagar</button>
                 </div>
             </div>
-            <div class="store-items">
-                <div class="store-articles">
-                </div>
-            </div>
-            <div class="contact" id="contact">
-                <div class="contact-content">
-                    <div class="contact-content-title">
-                        <h3>Contactanos</h3>
-                    </div>
-                    <div class="contact-content-info">
-                        <p><i class="bi bi-geo-alt"></i> Direccion: <span><a href="https://goo.gl/maps/LGRuCi7ms6Do2zXX6" target="_blank">Cra. 18 #19-43</a></span></p>
-                        <p><i class="bi bi-telephone"></i> Telefono: <span><a href="tel:+583176845635" target="_blank">3176845635</a></span></p>
-                        <p><i class="bi bi-instagram"></i> Instagram: <span><a href="https://www.instagram.com/rapetitc/" target="_blank">@rapetitc</a></span></p>
-                        <p><i class="bi bi-facebook"></i> Facebook: <span><a href="https://www.facebook.com/rapetitc" target="_blank">@rapetitc</a></span></p>
-                        <p><i class="bi bi-whatsapp"></i> Whatsapp: <span>3176845635</span></p>
-                    </div>
-                </div>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.976858151066!2d-73.12922588469203!3d7.128673217808401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e68157bb3e9177b%3A0x39aa039f5ef88b88!2sCra.%2018%20%2319-43%2C%20Bucaramanga%2C%20Santander!5e0!3m2!1ses-419!2sco!4v1661986554766!5m2!1ses-419!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>            </div>
         </div>
-        <footer>
-            &copy; Online Store, Todos los derechos reservados.
-        </footer>
     </div>
-    <script src="src/js/main.js"></script>
+    <!-- MODALS -->
+    <div class="container-md">
+        <div class="row">
+            <div class="col">
+                <nav class="navbar navbar-expand-lg bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="/">
+                            <img src="src/media/logo.png" alt="Logo" height="50">
+                            <h1>Online Store</h1>
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                            <ul class="navbar-nav text-center">
+                                <li class="nav-item">
+                                    <a class="nav-link" aria-current="page" href="/">Inicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#store">Tienda</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#contact">Contactanos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#contact">Sobre Nosotros</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active"
+                            aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1"
+                            aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
+                            aria-label="Slide 3"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" data-bs-interval="10000">
+                            <img src="src/media/slider1.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item" data-bs-interval="2000">
+                            <img src="src/media/slider2.jpg" class="d-block w-100" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="src/media/slider3.jpg" class="d-block w-100" alt="...">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- STORE -->
+        <div class="row" id="store">
+            <div class="col" id="products">
+                <div class="row justify-content-between mt-2 mb-4">
+                    <div class="col text-start">
+                        <button type="button" class="btn btn-outline-primary"><i class="bi bi-funnel"></i></button>
+                    </div>
+                    <div class="col">
+                        <form class="d-flex" role="search">
+                            <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+                            <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+                        </form>
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-outline-primary" id="modal-cart" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"><i class="bi bi-cart3"></i></button>
+                    </div>
+                </div>
+                <div class="row products">
+                    <div class="col d-flex flex-wrap justify-content-center">
+                        <div class="card m-1" style="width: 15rem;">
+                            <div class="card-img">
+                                <img src="#" alt="#">
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title"></h5>
+                                <p class="card-text"></p>
+                                <div class="card-buttons">
+                                    <button class="btn btn-primary"><i class="bi bi-trash3"></i></button><input type="text" class="conunter text-center" value="0"><button class="btn btn-primary"><i class="bi bi-bag-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- STORE -->
+        <!-- CONTACT -->
+        <div class="row">
+            <div class="col">
+                <div class="contact" id="contact">
+                    <div class="contact-content">
+                        <div class="contact-content-title">
+                            <h3>Contactanos</h3>
+                        </div>
+                        <div class="contact-content-info">
+                            <p><i class="bi bi-geo-alt"></i> Direccion: <span><a
+                                        href="https://goo.gl/maps/LGRuCi7ms6Do2zXX6" target="_blank">Cra. 18
+                                        #19-43</a></span></p>
+                            <p><i class="bi bi-telephone"></i> Telefono: <span><a href="tel:+583176845635"
+                                        target="_blank">3176845635</a></span></p>
+                            <p><i class="bi bi-instagram"></i> Instagram: <span><a
+                                        href="https://www.instagram.com/rapetitc/" target="_blank">@rapetitc</a></span>
+                            </p>
+                            <p><i class="bi bi-facebook"></i> Facebook: <span><a
+                                        href="https://www.facebook.com/rapetitc" target="_blank">@rapetitc</a></span>
+                            </p>
+                            <p><i class="bi bi-whatsapp"></i> Whatsapp: <span>3176845635</span></p>
+                        </div>
+                    </div>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.976858151066!2d-73.12922588469203!3d7.128673217808401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e68157bb3e9177b%3A0x39aa039f5ef88b88!2sCra.%2018%20%2319-43%2C%20Bucaramanga%2C%20Santander!5e0!3m2!1ses-419!2sco!4v1661986554766!5m2!1ses-419!2sco"
+                        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" disabled></iframe>
+                </div>
+            </div>
+            <!-- CONTACT -->
+            <!-- FOOTER -->
+            <footer>
+                &copy; Online Store, Todos los derechos reservados.
+            </footer>
+            <!-- FOOTER -->
+        </div>
+        <!-- FIN DE CONTAINER -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+            crossorigin="anonymous"></script>
+        <script src="src/js/main.js"></script>
 </body>
+
 </html>
