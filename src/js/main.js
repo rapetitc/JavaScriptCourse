@@ -401,6 +401,7 @@ document.addEventListener("click", (e) => {
       tempButtonBox.children[1].value = cart.update(cartDB, productsDB, parseInt(tempCard.dataset.id), -1)
     } else if (tempButtonBox.children[2] == tempTarget || tempButtonBox.children[2].children[0] == tempTarget) {
       //console.log("entre a sumar");
+
       tempButtonBox.children[1].value = cart.update(cartDB, productsDB, parseInt(tempCard.dataset.id), +1)
     } else {
       console.warn("No estoy ajustando valores con los botones");
@@ -452,8 +453,13 @@ window.addEventListener("beforeunload", (e) => {
   localStorage.setItem("cartDB", temp)
 });
 window.onload = (e) => {
-  let temp = JSON.parse(localStorage.getItem("cartDB"));
-  cartDB = temp;
+  let tempStorage = localStorage.getItem("cartDB");
+  if (JSON.parse(tempStorage).length > 0) {
+    console.log("Hay items");
+    cartDB = JSON.parse(tempStorage)
+  } else {
+    cartDB = [];
+  }
 };
 
 // Eventos del DOM  >>>>
