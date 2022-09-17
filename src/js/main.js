@@ -280,12 +280,12 @@ const stock = {
 // Inicio de mi app // Inicio de mi app // Inicio de mi app >>>>
 function app() {
   showCart(cartDB);
-  showProduct(productsDB, discountsDB, taxesDB);
+  showProduct(productsDB, discountsDB, taxesDB, cartDB);
 }
 // Inicio de mi app // Inicio de mi app // Inicio de mi app >>>>
 
 // Funcion para actualizar la pagina principal con los articulos  >>>>
-function showProduct(productsDB, discountsDB, taxesDB) {
+function showProduct(productsDB, discountsDB, taxesDB, cartDB) {
   // Tomando mi codigo HTML para ser modificado
   let tempHTMLProducts = document.querySelector("#products .products .col");
   //Reseteo de mi codigo HMTL
@@ -294,6 +294,10 @@ function showProduct(productsDB, discountsDB, taxesDB) {
   let tempFullProducts = stock.pull(productsDB, discountsDB, taxesDB);
   if (tempFullProducts.length > 0) {
     for (let i = 0; i < tempFullProducts.length; i++) {
+      let tempItemFound = cartDB.filter(e => { if (e.id == tempFullProducts[i].id) {return e.quantity} });
+      if (tempItemFound.length > 0) { tempItemFound = tempItemFound[0].quantity } else { tempItemFound = 0 }
+      console.log(tempItemFound)
+
       tempHTMLProducts.innerHTML += `
                     <div class="card m-1" style="width: 15rem;" data-id="${tempFullProducts[i].id}">
                         <div class="card-img">
@@ -307,7 +311,9 @@ function showProduct(productsDB, discountsDB, taxesDB) {
                               tempFullProducts[i].taxes
                             }, COP ${tempFullProducts[i].price}</p>
                             <div class="card-buttons">
-                                <button class="btn btn-primary"><i class="bi bi-trash3"></i></button><input type="text" class="conunter text-center" value="0"><button class="btn btn-primary"><i class="bi bi-bag-plus"></i></button>
+                                <button class="btn btn-primary"><i class="bi bi-trash3"></i></button>
+                                <input type="text" class="conunter text-center" value="${tempItemFound}">
+                                <button class="btn btn-primary"><i class="bi bi-bag-plus"></i></button>
                             </div>
                         </div>
                     </div>
@@ -449,21 +455,20 @@ document.onkeydown = function (e) {
 };
 
 window.addEventListener("beforeunload", (e) => {
-  let temp = JSON.stringify(cartDB)
-  localStorage.setItem("cartDB", temp)
+  localStorage.setItem("cartDB", JSON.stringify(cartDB))
 });
 window.onload = (e) => {
   let tempStorage = localStorage.getItem("cartDB");
-  if (JSON.parse(tempStorage).length > 0) {
+  if (JSON.parse(tempStorage) != null) {
     console.log("Hay items");
-    cartDB = JSON.parse(tempStorage)
+    cartDB = JSON.parse(tempStorage);
   } else {
+    console.log('No hay items');
     cartDB = [];
   }
+
+  // Ejecucion de mi app  >>>>
+  app();
+  // Ejecucion de mi app  >>>>
 };
-
 // Eventos del DOM  >>>>
-
-// Ejecucion de mi app  >>>>
-app();
-// Ejecucion de mi app  >>>>
