@@ -118,7 +118,28 @@ const taxesDB = [
   },
 ];
 let cartDB = [];
+let profileDB = [];
 // Data Base // Data Base // Data Base // Data Base // Data Base >>>>
+
+// Constructor de perfiles >>>>
+class ProfileCreator {
+  constructor(
+    fullName,
+    telephoneNumber,
+    email,
+    fullAddress,
+    dateOfPurchase,
+    invoiceNumber
+  ) {
+    this.fullName = fullName;
+    this.telephoneNumber = telephoneNumber;
+    this.email = email;
+    this.fullAddress = fullAddress;
+    this.dateOfPurchase = dateOfPurchase;
+    this.invoiceNumber = invoiceNumber;
+  }
+}
+// Constructor de perfiles >>>>
 
 // Constructor de mi carrito >>>>
 class MyCart {
@@ -168,7 +189,7 @@ const cart = {
       let itemOnProductFound = [];
       //Chequear si el item esta agregado al carrito
       //console.log(itemOnCartFound.length);
-      itemOnCartFound = cartDB.find(item => item.id == id);
+      itemOnCartFound = cartDB.find((item) => item.id == id);
       //console.log(itemOnCartFound);
       if (itemOnCartFound != undefined) {
         //Ajustando quantity
@@ -178,14 +199,20 @@ const cart = {
           quantity = quantity;
         }
         //Check Stock
-        itemOnProductFound = productsDB.find((item) => item.id == itemOnCartFound.id);
+        itemOnProductFound = productsDB.find(
+          (item) => item.id == itemOnCartFound.id
+        );
         //console.log(itemOnCartFound.quantity, quantity);
-        if (itemOnCartFound.quantity == 1 && quantity == 0 || isNaN(quantity)){
+        if (
+          (itemOnCartFound.quantity == 1 && quantity == 0) ||
+          isNaN(quantity)
+        ) {
           console.log(cartDB.indexOf(itemOnCartFound));
           let index = cartDB.indexOf(itemOnCartFound);
-          if (index > -1) { // only splice array when item is found
+          if (index > -1) {
+            // only splice array when item is found
             cartDB.splice(index, 1); // 2nd parameter means remove one item only
-          };
+          }
           itemOnCartFound.quantity = 0;
           return 0;
         } else if (itemOnProductFound.stock < quantity) {
@@ -209,7 +236,7 @@ const cart = {
           }
         }
       } else {
-        return 0
+        return 0;
       }
     }
   },
@@ -219,35 +246,52 @@ const cart = {
 // Conjunto de funciones para validar stock en mi base de datos >>>>
 const stock = {
   //search: () => {},
-  pull: (productsDB, discountsDB, taxesDB) => {
-    let tempInfoToPull = [];
-    if (productsDB.length > 0) {
-      for (let i = 0; i < productsDB.length; i++) {
+  pull: (productsDB, discountsDB, taxesDB, filter) => {
+    let tempInfoToPull = [],
+      tempProdDBFormat = [...productsDB];
+
+    // Haciendo el fitro por ID
+    if (filter.length > 0) {
+      tempProdDBFormat = [];
+      productsDB.forEach((item) => {
+        filter.forEach((fil) => {
+          //console.log(fil)
+          if (item.id == fil) {
+            tempProdDBFormat.push(item);
+          }
+        });
+      });
+    }
+    //console.log(tempProdDBFormat);
+
+    if (tempProdDBFormat.length > 0) {
+      for (let i = 0; i < tempProdDBFormat.length; i++) {
         tempInfoToPull.push({
-          id: productsDB[i].id,
-          title: productsDB[i].title,
-          price: productsDB[i].price,
+          id: tempProdDBFormat[i].id,
+          title: tempProdDBFormat[i].title,
+          price: tempProdDBFormat[i].price,
           discount: stock.checkDiscount(
             discountsDB,
-            productsDB[i].id,
-            productsDB[i].price
+            tempProdDBFormat[i].id,
+            tempProdDBFormat[i].price
           ),
           taxes: stock.checkTaxes(
             taxesDB,
-            productsDB[i].id,
-            productsDB[i].price -
+            tempProdDBFormat[i].id,
+            tempProdDBFormat[i].price -
               stock.checkDiscount(
                 discountsDB,
-                productsDB[i].id,
-                productsDB[i].price
+                tempProdDBFormat[i].id,
+                tempProdDBFormat[i].price
               )
           ),
-          stock: productsDB[i].stock,
-          imgroute: productsDB[i].imgroute,
-          category: productsDB[i].category,
+          stock: tempProdDBFormat[i].stock,
+          imgroute: tempProdDBFormat[i].imgroute,
+          category: tempProdDBFormat[i].category,
         });
       }
     }
+    //console.log(tempInfoToPull)
     return tempInfoToPull;
   },
   checkDiscount: (discountsDB, id, price) => {
@@ -273,38 +317,57 @@ const stock = {
     });
     //console.log(tempValueToReturn);
     return tempValueToReturn;
-  }
+  },
 };
 // Conjunto de funciones para validar stock en mi base de datos >>>>
 
 // Inicio de mi app // Inicio de mi app // Inicio de mi app >>>>
 function app() {
+  showFilter(productsDB);
   showCart(cartDB);
   showProduct(productsDB, discountsDB, taxesDB, cartDB);
+
+  setInterval(() => {
+    console.clear()
+    console.log(moment().format("DD/MMM/YYYY, hh:mm:ss a"))
+  }, 1000)
 }
 // Inicio de mi app // Inicio de mi app // Inicio de mi app >>>>
 
 // Funcion para actualizar la pagina principal con los articulos  >>>>
-function showProduct(productsDB, discountsDB, taxesDB, cartDB) {
+function showProduct(productsDB, discountsDB, taxesDB, cartDB, filter = []) {
   // Tomando mi codigo HTML para ser modificado
   let tempHTMLProducts = document.querySelector("#products .products .col");
   //Reseteo de mi codigo HMTL
   tempHTMLProducts.innerHTML = ``;
   //Midiendo la longitud del carrito
-  let tempFullProducts = stock.pull(productsDB, discountsDB, taxesDB);
+  let tempFullProducts = stock.pull(productsDB, discountsDB, taxesDB, filter);
   if (tempFullProducts.length > 0) {
     for (let i = 0; i < tempFullProducts.length; i++) {
-      let tempItemFound = cartDB.filter(e => { if (e.id == tempFullProducts[i].id) {return e.quantity} });
-      if (tempItemFound.length > 0) { tempItemFound = tempItemFound[0].quantity } else { tempItemFound = 0 }
-      console.log(tempItemFound)
+      let tempItemFound = cartDB.filter((e) => {
+        if (e.id == tempFullProducts[i].id) {
+          return e.quantity;
+        }
+      });
+      if (tempItemFound.length > 0) {
+        tempItemFound = tempItemFound[0].quantity;
+      } else {
+        tempItemFound = 0;
+      }
 
       tempHTMLProducts.innerHTML += `
-                    <div class="card m-1" style="width: 15rem;" data-id="${tempFullProducts[i].id}">
+                    <div class="card m-1" style="width: 15rem;" data-id="${
+                      tempFullProducts[i].id
+                    }">
                         <div class="card-img">
-                            <img src="${tempFullProducts[i].imgroute}" alt="${tempFullProducts[i].title}">
+                            <img src="${tempFullProducts[i].imgroute}" alt="${
+        tempFullProducts[i].title
+      }">
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">${tempFullProducts[i].title}</h5>
+                            <h5 class="card-title">${
+                              tempFullProducts[i].title
+                            }</h5>
                             <p class="card-text">COP ${
                               tempFullProducts[i].price -
                               tempFullProducts[i].discount +
@@ -330,7 +393,12 @@ function showProduct(productsDB, discountsDB, taxesDB, cartDB) {
 // Funcion para actualizar mi carrito  >>>>
 function showCart(cartDB) {
   // Tomando mi codigo HTML para ser modificado
-  let tempHTML = document.querySelector(".modal .modal-body tbody ");
+  let tempHTML = document.querySelector("#cartItems");
+  let tempButtonHTML = document.querySelector(
+    ".modal .modal-footer .btn-primary"
+  );
+  let tempTotalPriceHTML = document.querySelector("#inputTotalPrice");
+
   //Reseteo de mi codigo HMTL
   tempHTML.innerHTML = ``;
   // Variable que almacena el calculo del precio total
@@ -356,7 +424,7 @@ function showCart(cartDB) {
                     <td>COP ${tempFullCart[i].discount}</td>
                     <td>COP ${tempFullCart[i].taxes}</td>
                     <td>${tempFullCart[i].quantity}</td>
-                    <td>${
+                    <td>COP ${
                       (tempFullCart[i].price -
                         tempFullCart[i].discount +
                         tempFullCart[i].taxes) *
@@ -368,7 +436,7 @@ function showCart(cartDB) {
   } else {
     tempHTML.innerHTML += `
             <tr>
-                <td colspan="8">Carrito vacio</td>
+                <td colspan="7" class="text-center">Carrito vacio</td>
             <tr>
             `;
   }
@@ -386,53 +454,190 @@ function showCart(cartDB) {
             <td>COP ${tempTotalPrice}</td>
         </tr>
         `;
+  //console.log(tempButtonHTML);
+  tempFullCart.length > 0
+    ? tempButtonHTML.removeAttribute("Disabled")
+    : tempButtonHTML.setAttribute("Disabled", "Disabled");
+  tempTotalPriceHTML.value = "COP " + tempTotalPrice;
 }
 // Funcion para actualizar mi carrito  >>>>
 
+// Funcion para actualizar mi filtro  >>>>
+function showFilter(productsDB) {
+  let $tempFilterCatHTML = document.querySelector("#filterCategory"),
+    $minFilterPrice = document.querySelector("#minFilterPrice"),
+    $maxFilterPrice = document.querySelector("#maxFilterPrice"),
+    uniqueCategory = [],
+    prices = [];
+  (maxPrice = 0), (minPrice = 0);
+
+  productsDB.forEach((item) => {
+    if (!uniqueCategory.includes(item.category)) {
+      uniqueCategory.push(item.category);
+    }
+    if (!prices.includes(item.price)) {
+      prices.push(item.price);
+    }
+  });
+
+  uniqueCategory.forEach((item) => {
+    $tempFilterCatHTML.innerHTML += `
+    <div class="form-check mx-2">
+        <input class="form-check-input" type="checkbox" value="" id="${item}">
+        <label class="form-check-label" for="${item}">
+            ${item}
+        </label>
+    </div>
+    `;
+  });
+  maxPrice = Math.max(...prices);
+  minPrice = Math.min(...prices);
+  $maxFilterPrice.placeholder = `COP ${maxPrice}`;
+  $minFilterPrice.placeholder = `COP ${minPrice}`;
+}
+// Funcion para actualizar mi filtro  >>>>
+
 // Funcion para comprar >>>>
-//function purchase() {}
+function purchase() {
+  let invoice = document.getElementById("invoice");
+  if (validateForm() == true) {
+    let tempItem = JSON.stringify(profileDB);
+    localStorage.setItem("invoiceInfo", tempItem);
+
+    let tempFullCart = JSON.stringify(cart.pull(cartDB, productsDB, discountsDB, taxesDB));
+    localStorage.setItem("fullCartDB", tempFullCart);
+
+    invoice.submit();
+  } else {
+    console.log("Faltan datos");
+  }
+}
 // Funcion para comprar >>>>
 
+// Funcion para validar invoice >>>>
+function validateForm() {
+  let inputFirstName = document.getElementById("inputFirstName").value,
+    inputLastName = document.getElementById("inputLastName").value,
+    inputTelephoneNumber = document.getElementById(
+      "inputTelephoneNumber"
+    ).value,
+    inpuEmail = document.getElementById("inpuEmail").value,
+    inputAddress = document.getElementById("inputAddress").value,
+    inputAddress2 = document.getElementById("inputAddress2").value,
+    inputCity = document.getElementById("inputCity").value,
+    inputState = document.getElementById("inputState").value,
+    inputZip = document.getElementById("inputZip").value,
+    inputCardName = document.getElementById("inputCardName").value,
+    inputCardNumber = document.getElementById("inputCardNumber").value,
+    inputCardSecurityCode = document.getElementById(
+      "inputCardSecurityCode"
+    ).value;
+  //console.log(inputFirstName, inputLastName, inputTelephoneNumber, inpuEmail, inputAddress, inputAddress2, inputCity, inputZip, inputCardName, inputCardNumber, inputCardSecurityCode)
+  if (
+    inputFirstName.length > 3 &&
+    inputLastName.length > 3 &&
+    inputTelephoneNumber.length == 10 &&
+    inpuEmail.length > 7 &&
+    inputAddress.length > 7 &&
+    inputAddress2.length > 7 &&
+    inputCity.length > 5 &&
+    inputZip.length == 6 &&
+    inputCardName.length > 10 &&
+    inputCardNumber.length == 16 &&
+    inputCardSecurityCode.length == 3
+  ) {
+    let tempProfile = new ProfileCreator(
+      inputFirstName + " " + inputLastName,
+      inputTelephoneNumber,
+      inpuEmail,
+      inputAddress + " " + inputAddress2 + " " + inputCity + " " + inputState + " " + inputZip,
+      moment().format("DD/MMM/YYYY, hh:mm:ss a"),
+      parseInt(Math.random() * 999999)
+    );
+    profileDB.push(tempProfile);
+    return true;
+  } else {
+    return false;
+  }
+}
+// Funcion para validar invoice >>>>
 
 // Eventos del DOM  >>>>
 document.addEventListener("click", (e) => {
   let tempTarget = e.target,
     tempCard = tempTarget.closest(".card");
-    
-    if (tempCard != null) {
+
+  if (tempCard != null) {
     //console.log(parseInt(tempCard.dataset.id));
     tempButtonBox = tempCard.lastElementChild.lastElementChild;
-    if (tempButtonBox.children[0] == tempTarget || tempButtonBox.children[0].children[0] == tempTarget) {
+    if (
+      tempButtonBox.children[0] == tempTarget ||
+      tempButtonBox.children[0].children[0] == tempTarget
+    ) {
       //console.log("entre a restar");
-      tempButtonBox.children[1].value = cart.update(cartDB, productsDB, parseInt(tempCard.dataset.id), -1)
-    } else if (tempButtonBox.children[2] == tempTarget || tempButtonBox.children[2].children[0] == tempTarget) {
+      tempButtonBox.children[1].value = cart.update(
+        cartDB,
+        productsDB,
+        parseInt(tempCard.dataset.id),
+        -1
+      );
+    } else if (
+      tempButtonBox.children[2] == tempTarget ||
+      tempButtonBox.children[2].children[0] == tempTarget
+    ) {
       //console.log("entre a sumar");
-
-      tempButtonBox.children[1].value = cart.update(cartDB, productsDB, parseInt(tempCard.dataset.id), +1)
+      tempButtonBox.children[1].value = cart.update(
+        cartDB,
+        productsDB,
+        parseInt(tempCard.dataset.id),
+        +1
+      );
     } else {
       console.warn("No estoy ajustando valores con los botones");
     }
   }
-  
+
   let tempCartButton = document.querySelector("#modal-cart");
-  if ( tempCartButton == tempTarget ) {
+  if (tempCartButton == tempTarget) {
     showCart(cartDB);
   }
 
+  if (tempTarget.matches("#purchase")) {
+    purchase();
+  }
 });
 
 document.onkeyup = function (e) {
   let tempTarget = e.target,
-  tempCard = tempTarget.closest(".card");
+    tempCard = tempTarget.closest(".card");
 
   if (tempCard != null) {
     tempButtonBox = tempCard.lastElementChild.lastElementChild;
 
     if (tempButtonBox.children[1] == tempTarget) {
-      tempButtonBox.children[1].value = cart.update(cartDB, productsDB, parseInt(tempCard.dataset.id), parseInt(tempButtonBox.children[1].value))
+      tempButtonBox.children[1].value = cart.update(
+        cartDB,
+        productsDB,
+        parseInt(tempCard.dataset.id),
+        parseInt(tempButtonBox.children[1].value)
+      );
     } else {
       console.warn("No estoy ajustando valores dentro del input");
     }
+  }
+
+  if (tempTarget.matches("#searchProduct")) {
+    let searchInput = document.getElementById("searchProduct").value;
+    let searched = [];
+
+    for (let i = 0; i < productsDB.length; i++) {
+      let tempItem = productsDB[i].title.toLowerCase();
+      if (tempItem.includes(searchInput)) {
+        searched.push(productsDB[i].id);
+      }
+    }
+    showProduct(productsDB, discountsDB, taxesDB, cartDB, searched);
+    //console.log("Soy search y encontre: ",searched)
   }
 };
 
@@ -452,20 +657,81 @@ document.onkeydown = function (e) {
       return false;
     }
   }
+  //console.log(e.key)
+  if (
+    tempTarget.matches("#inputFirstName") ||
+    tempTarget.matches("#inputLastName")
+  ) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 15 || !isNaN(parseInt(e.key))) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputTelephoneNumber")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length > 9 || isNaN(parseInt(e.key))) {
+      return false;
+    }
+  }
+  if (
+    tempTarget.matches("#inpuEmail") ||
+    tempTarget.matches("#inputAddress") ||
+    tempTarget.matches("#inputAddress2")
+  ) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 50) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputCity")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 25) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputZip")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 6) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputCardName")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 30 || !isNaN(parseInt(e.key))) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputCardNumber")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 16 || isNaN(parseInt(e.key))) {
+      return false;
+    }
+  }
+  if (tempTarget.matches("#inputCardSecurityCode")) {
+    if (e.key == "Backspace" || e.key == "Delete" || e.key == "Tab") {
+      return true;
+    } else if (tempTarget.value.length >= 3 || isNaN(parseInt(e.key))) {
+      return false;
+    }
+  }
 };
 
 window.addEventListener("beforeunload", (e) => {
-  localStorage.setItem("cartDB", JSON.stringify(cartDB))
+  localStorage.setItem("cartDB", JSON.stringify(cartDB));
 });
+
 window.onload = (e) => {
   let tempStorage = localStorage.getItem("cartDB");
-  if (JSON.parse(tempStorage) != null) {
-    console.log("Hay items");
-    cartDB = JSON.parse(tempStorage);
-  } else {
-    console.log('No hay items');
-    cartDB = [];
-  }
+  JSON.parse(tempStorage) != null
+    ? (cartDB = [...JSON.parse(tempStorage)])
+    : (cartDB = []);
 
   // Ejecucion de mi app  >>>>
   app();
