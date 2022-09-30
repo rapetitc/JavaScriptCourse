@@ -19,11 +19,13 @@ class ProfileCreator {
 function checkValidity(generalValidation, tempTarget) {
   let inputs = invoiceForm.querySelectorAll("input"),
     selects = invoiceForm.querySelectorAll("select"),
+    tempArray=[],
     i = 0;
 
   function inputValid(element) {
     element.classList.remove("is-invalid");
     element.classList.add("is-valid");
+    tempArray.push(element.value)
     i++;
   }
   function inputInvalid(element) {
@@ -118,9 +120,17 @@ function checkValidity(generalValidation, tempTarget) {
       }
     }
   }
+  console.log(i);
 
   if (i >= 12) {
-    let tempProfile = new ProfileCreator(inputFirstName + " " + inputLastName, inputTelephoneNumber, inpuEmail, inputAddress + " " + inputAddress2 + " " + inputCity + " " + inputState + " " + inputZip, moment().format("DD/MMM/YYYY, hh:mm:ss a"), parseInt(Math.random() * 999999));
+    
+
+
+
+
+
+    let tempProfile = new ProfileCreator(document.getElementById('inputFirstName').value + " " + document.getElementById('inputLastName').value, document.getElementById('inputTelephoneNumber').value, document.getElementById('inpuEmail').value, document.getElementById('inputAddress').value + " " + document.getElementById('inputAddress2').value + " " + document.getElementById('inputCity').value + " " + document.getElementById('inputState').value + " " + document.getElementById('inputZip').value, moment().format("DD/MMM/YYYY, hh:mm:ss a"), parseInt(Math.random() * 999999));
+    console.log(tempProfile)
     profileDB.push(tempProfile);
     return true;
   } else {
@@ -136,22 +146,23 @@ function setExpirationDate() {
 
 // Funciones de validadoras
 
-
 //Eventos del form
 invoiceForm.addEventListener(
   "submit",
   (e) => {
     e.preventDefault();
     e.stopPropagation();
-
+    async function submittting(params) {
+      let tempFullCart = JSON.stringify( await cart.pull(cartDB));
+      localStorage.setItem("fullCartDB", tempFullCart);
+      console.log("aqui");
+      invoiceForm.submit();
+    }
     if (checkValidity(true)) {
       let tempItem = JSON.stringify(profileDB);
       localStorage.setItem("invoiceInfo", tempItem);
 
-      let tempFullCart = JSON.stringify(cart.pull(cartDB, productsDB, discountsDB, taxesDB));
-      localStorage.setItem("fullCartDB", tempFullCart);
-
-      invoiceForm.submit();
+      submittting();
     }
   },
   false

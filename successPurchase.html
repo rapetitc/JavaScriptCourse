@@ -193,6 +193,7 @@
       window.onload = () => {
         let tempProfileInfo = localStorage.getItem("invoiceInfo"),
         tempFullCart = localStorage.getItem("fullCartDB");
+        console.log(tempFullCart,tempProfileInfo)
         if (tempProfileInfo == null || tempFullCart == null) {
           window.location.href = "./index.html";
         } else {
