@@ -1,0 +1,120 @@
+{
+  "products" : [
+    {
+      "id": 1,
+      "title": "Harina de Maiz PAN 1000g",
+      "price": 4500,
+      "stock": 25,
+      "imgroute": "src/media/product1.png",
+      "category": "Harina"
+    },
+    {
+      "id": 2,
+      "title": "Aceite Mazeite 1 Litro",
+      "price": 11000,
+      "stock": 36,
+      "imgroute": "src/media/product9.png",
+      "category": "Aceite"
+    },
+    {
+      "id": 3,
+      "title": "Mantequilla Mavesa 1000g",
+      "price": 12000,
+      "stock": 91,
+      "imgroute": "src/media/product10.jpg",
+      "category": "Mantequila"
+    },
+    {
+      "id": 4,
+      "title": "1/2 Carton de Huevos Doñema ",
+      "price": 6500,
+      "stock": 33,
+      "imgroute": "src/media/product11.png",
+      "category": "Huevo"
+    },
+    {
+      "id": 5,
+      "title": "Leche en Polvo La Campesina 1000g",
+      "price": 24000,
+      "stock": 78,
+      "imgroute": "src/media/product2.png",
+      "category": "Leche"
+    },
+    {
+      "id": 6,
+      "title": "Chocolate Savoy 430g",
+      "price": 7000,
+      "stock": 78,
+      "imgroute": "src/media/product4.png",
+      "category": "Chocolate"
+    },
+    {
+      "id": 7,
+      "title": "Chocolate Savoy 55% 180g",
+      "price": 11000,
+      "stock": 78,
+      "imgroute": "src/media/product5.png",
+      "category": "Chocolate"
+    },
+    {
+      "id": 8,
+      "title": "Cafe Flor de Patria 250g",
+      "price": 4000,
+      "stock": 78,
+      "imgroute": "src/media/product6.png",
+      "category": "Cafe"
+    },
+    {
+      "id": 9,
+      "title": "Mayonesa Kraft 480g",
+      "price": 6000,
+      "stock": 78,
+      "imgroute": "src/media/product7.png",
+      "category": "Mayonesa"
+    },
+    {
+      "id": 10,
+      "title": "Atun Margarita 500g",
+      "price": 4500,
+      "stock": 78,
+      "imgroute": "src/media/product8.png",
+      "category": "Atun"
+    },
+    {
+      "id": 11,
+      "title": "Choclitos de Limon 250g",
+      "price": 2500,
+      "stock": 78,
+      "imgroute": "src/media/product3.png",
+      "category": "Snacks"
+    }
+  ],
+  "discounts" : [
+    {
+      "id": 1,
+      "title": "Descuentos en Chocolates y Snacks",
+      "discount": "15%",
+      "applyTo": [6, 7, 11],
+      "startDate": "01/09/2022",
+      "expirationDate": "31/12/2022"
+    },
+    {
+      "id": 2,
+      "title": "Descuentos en Mantequilla Mavesa 1000g",
+      "discount": "20%",
+      "applyTo": [3],
+      "startDate": "01/09/2022",
+      "expirationDate": "31/12/2022"
+    }
+  ],
+  "taxes" : [
+    {
+      "id": 1,
+      "title": "Acorde a la ley los taxes 31/12/2021",
+      "taxes": "12%",
+      "applyTo": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "startDate": "31/12/2021",
+      "expirationDate": "31/12/2022"
+    }
+  ]  
+}
