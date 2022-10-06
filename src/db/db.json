@@ -6,7 +6,7 @@
       "price": 4500,
       "stock": 25,
       "imgroute": "src/media/product1.png",
-      "category": "Harina"
+      "category": "Viveres"
     },
     {
       "id": 2,
@@ -14,7 +14,7 @@
       "price": 11000,
       "stock": 36,
       "imgroute": "src/media/product9.png",
-      "category": "Aceite"
+      "category": "Aceites"
     },
     {
       "id": 3,
@@ -22,7 +22,7 @@
       "price": 12000,
       "stock": 91,
       "imgroute": "src/media/product10.jpg",
-      "category": "Mantequila"
+      "category": "Viveres"
     },
     {
       "id": 4,
@@ -46,7 +46,7 @@
       "price": 7000,
       "stock": 78,
       "imgroute": "src/media/product4.png",
-      "category": "Chocolate"
+      "category": "Dulces"
     },
     {
       "id": 7,
@@ -54,7 +54,7 @@
       "price": 11000,
       "stock": 78,
       "imgroute": "src/media/product5.png",
-      "category": "Chocolate"
+      "category": "Dulces"
     },
     {
       "id": 8,
@@ -62,7 +62,7 @@
       "price": 4000,
       "stock": 78,
       "imgroute": "src/media/product6.png",
-      "category": "Cafe"
+      "category": "Viveres"
     },
     {
       "id": 9,
@@ -70,7 +70,7 @@
       "price": 6000,
       "stock": 78,
       "imgroute": "src/media/product7.png",
-      "category": "Mayonesa"
+      "category": "Viveres"
     },
     {
       "id": 10,
@@ -78,7 +78,7 @@
       "price": 4500,
       "stock": 78,
       "imgroute": "src/media/product8.png",
-      "category": "Atun"
+      "category": "Enlatados"
     },
     {
       "id": 11,
@@ -86,7 +86,7 @@
       "price": 2500,
       "stock": 78,
       "imgroute": "src/media/product3.png",
-      "category": "Snacks"
+      "category": "Dulces"
     }
   ],
   "discounts" : [

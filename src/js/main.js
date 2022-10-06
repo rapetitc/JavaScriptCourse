@@ -6,34 +6,87 @@ function app() {
 }
 // Inicio de mi app // Inicio de mi app // Inicio de mi app >>>>
 
+function filterChecked() {
+  let filters = document.getElementById("filterCategory").querySelectorAll("input");
+  let categories = [];
+  filters.forEach((e) => {
+    if (e.checked) {
+      console.log(e.value);
+      categories.push(e.value);
+    }
+  });
+
+  console.log("=======");
+  return categories;
+}
+
 let $searchBar = document.querySelector("#searchProduct");
 function search() {
   let searchInput = $searchBar.value;
-  console.log("searching...");
 
-  showProduct(cartDB, searchInput);
+  console.log("searching... (" + searchInput + ")");
+
+  showProduct(cartDB, searchInput, filterChecked());
 }
 
 // Funcion para actualizar la pagina principal con los articulos  >>>>
-async function showProduct(cartDB, filter) {
+async function showProduct(cartDB, title = "", category = []) {
   // Tomando mi codigo HTML para ser modificado
   let tempHTMLProducts = document.querySelector("#products .products .col");
-  //Reseteo de mi codigo HMTL
+  // Reseteo de mi codigo HMTL
   tempHTMLProducts.innerHTML = ``;
-  //Midiendo la longitud del carrito
-  let tempFullProducts = await stock.pull({});
+  // Consulta de API Faltas
+  let tempProductDB = await stock.pull({});
+  //console.log(tempProductDB);
+
+  const tempProductsDBByCategory = [];
+  tempProductDB.forEach((e) => {
+    category.forEach((c) => {
+      if (e.category == c) {
+        tempProductsDBByCategory.push(e);
+      }
+    });
+  });
+
+  let tempFullProducts = [];
+  if (tempProductsDBByCategory.length > 0) {
+    console.log('si category')
+    tempProductsDBByCategory.forEach((item) => {
+      if (item.title.toLowerCase().includes(title)) {
+        tempFullProducts.push(item);
+      }
+    });
+  } else {
+    console.log('no category')
+    tempProductDB.forEach((item) => {
+      if (item.title.toLowerCase().includes(title)) {
+        tempFullProducts.push(item);
+      }
+    });
+  }
+  //console.log(tempFullProducts);
+  // Midiendo la longitud del carrito
   if (tempFullProducts.length > 0) {
     for (let i = 0; i < tempFullProducts.length; i++) {
-      let tempItemFound = cartDB.filter((e) => {
-        if (e.id == tempFullProducts[i].id) {
-          return e.quantity;
+      const tempItemFound = () => {
+        let tempItemFound = cartDB.filter((e) => {
+          if (e.id == tempFullProducts[i].id) {
+            return e.quantity;
+          }
+        });
+        if (tempItemFound.length > 0) {
+          if (tempItemFound[0].quantity > 1) {
+            return `<button class="btn btn-primary"><i class="bi bi-bag-dash"></i></button>
+            <input type="text" class="conunter text-center" value="${tempItemFound[0].quantity}">`;
+          } else {
+            return `<button class="btn btn-primary"><i class="bi bi-trash3"></i></button>
+            <input type="text" class="conunter text-center" value="${tempItemFound[0].quantity}">`;
+          }
+        } else {
+          return `<button class="btn btn-primary" disabled><i class="bi bi-trash3"></i></button>
+          <input type="text" class="conunter text-center" value="0">`;
         }
-      });
-      if (tempItemFound.length > 0) {
-        tempItemFound = tempItemFound[0].quantity;
-      } else {
-        tempItemFound = 0;
-      }
+      };
       tempPriceToShow = tempFullProducts[i].discount > 0 ? `<span class="h4 text-success">COP ${tempFullProducts[i].price - tempFullProducts[i].discount + tempFullProducts[i].taxes}</span> <del class="text-secondary">COP ${tempFullProducts[i].price + tempFullProducts[i].taxes}</del>` : `<span class="h4">COP ${tempFullProducts[i].price + tempFullProducts[i].taxes}</span>`;
       tempHTMLProducts.innerHTML += `
                     <div class="card m-auto mt-3" style="width: 15rem;" data-id="${tempFullProducts[i].id}">
@@ -44,8 +97,7 @@ async function showProduct(cartDB, filter) {
                             <h5 class="card-title">${tempFullProducts[i].title}</h5>
                             <p class="card-text">${tempPriceToShow}</p>
                             <div class="card-buttons">
-                                <button class="btn btn-primary" disabled><i class="bi bi-trash3"></i></button>
-                                <input type="text" class="conunter text-center" value="${tempItemFound}">
+                                ${tempItemFound()}
                                 <button class="btn btn-primary"><i class="bi bi-bag-plus"></i></button>
                             </div>
                         </div>
@@ -157,7 +209,7 @@ async function showFilter() {
   uniqueCategory.forEach((item) => {
     $tempFilterCatHTML.innerHTML += `
     <div class="form-check mx-2">
-        <input class="form-check-input" type="checkbox" value="" id="${item}">
+        <input class="form-check-input" type="checkbox" value="${item}" id="${item}">
         <label class="form-check-label" for="${item}">
             ${item}
         </label>
@@ -168,13 +220,21 @@ async function showFilter() {
   minPrice = Math.min(...prices);
   $maxFilterPrice.placeholder = `COP ${maxPrice}`;
   $minFilterPrice.placeholder = `COP ${minPrice}`;
+  getFilters();
 }
 // Funcion para actualizar mi filtro  >>>>
+function getFilters() {
+  let filters = document.getElementById("filterCategory").querySelectorAll("input");
+  console.log(filters);
+  for (let i = 0; i < filters.length; i++) {
+    filters[i].addEventListener("change", (e) => {
+      search();
+    });
+  }
+}
 
 //Esperando a escuchar de search bar
-console.log($searchBar);
 $searchBar.onkeyup = (e) => {
-  console.log($searchBar);
   search();
 };
 //Esperando a escuchar de search bar
