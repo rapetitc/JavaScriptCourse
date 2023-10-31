@@ -1,4 +1,4 @@
-# OnlineStore
+# JavaScriptCourse
 Mi segundo proyecto y fue creado para la cursada de **JavaScript** de **[CODERHOUSE](https://www.coderhouse.com/)**
 
 #### Descripcion:
